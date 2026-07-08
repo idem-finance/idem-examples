@@ -1,0 +1,53 @@
+services:
+
+  postgres:
+    image: postgres:16
+    container_name: idem-examples-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: idem_dev
+      POSTGRES_USER: idem
+      POSTGRES_PASSWORD: idem
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U idem -d idem_dev"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7
+    container_name: idem-examples-redis
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Runs the published Idem ledger image. Set IDEM_VERSION to pin a version,
+  # e.g. IDEM_VERSION=0.1.0. See github.com/idem-finance/idem for source.
+  app:
+    image: id3mfin4nc3/idem:${IDEM_VERSION:-latest}
+    container_name: idem-examples-app
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/idem_dev
+      SPRING_DATASOURCE_USERNAME: idem
+      SPRING_DATASOURCE_PASSWORD: idem
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: 6379
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8081/actuator/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
