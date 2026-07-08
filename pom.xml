@@ -30,12 +30,16 @@
         <java.version>21</java.version>
         <kotlin.version>1.9.25</kotlin.version>
         <!--
-          finance.idem:idem-sdk-kotlin has not had a stable release yet — 0.0.11-test
+          finance.idem:idem-sdk-kotlin has not had a stable release yet — 0.0.12-test
           is the latest pre-release build published to Maven Central while the
           idem release pipeline is under active development. Update this once a real
           0.x/1.x release ships (see github.com/idem-finance/idem, issue #233).
         -->
-        <idem-sdk.version>0.0.11-test</idem-sdk.version>
+        <idem-sdk.version>0.0.12-test</idem-sdk.version>
+        <!-- Pinned to the same io.modelcontextprotocol.sdk:mcp version pulled in by
+             the main idem repo's mcp module (via spring-ai-bom 1.0.0), to guarantee
+             wire compatibility with IdemMcpServer's SSE transport. -->
+        <mcp-sdk.version>0.10.0</mcp-sdk.version>
     </properties>
 
     <dependencies>
@@ -43,6 +47,11 @@
             <groupId>finance.idem</groupId>
             <artifactId>idem-sdk-kotlin</artifactId>
             <version>${idem-sdk.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.modelcontextprotocol.sdk</groupId>
+            <artifactId>mcp</artifactId>
+            <version>${mcp-sdk.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
