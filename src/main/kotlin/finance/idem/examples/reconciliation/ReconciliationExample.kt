@@ -8,30 +8,19 @@ import finance.idem.sdk.model.JournalLineRequest
 import finance.idem.sdk.model.OnChainEntryRequest
 import finance.idem.sdk.model.PostTransactionRequest
 import finance.idem.sdk.model.StablecoinToken
-import io.ktor.client.call.body
-import io.ktor.client.request.header
-import io.ktor.client.request.post
-import io.ktor.client.request.setBody
-import io.ktor.http.ContentType
-import io.ktor.http.contentType
 import kotlinx.coroutines.runBlocking
 import java.math.BigDecimal
 import java.util.UUID
 
 /**
- * Example 04 — reconciliation, called directly against the REST API.
+ * Example 04 — reconciliation via the real SDK method.
  *
- * `IdemClient`'s entire public surface is postTransaction/getBalance/
- * listEntries/getStatement — there is no `reconcileEntries()` or
- * `rollbackWorkflow()` on the SDK today. Reconciliation IS real and reachable
- * at `POST /api/v1/reconciliation/batch` (requires RECONCILIATION_WRITE), so
- * this example posts through the SDK as usual and then reconciles with a
- * plain call through the SDK client's underlying HTTP client — the same
- * pattern used for account creation in `support/ExampleAccounts.kt`.
+ * `IdemClient.reconcileBatch` wraps `POST /api/v1/reconciliation/batch`
+ * (requires RECONCILIATION_WRITE) directly — no raw HTTP workaround needed.
  *
  * Rollback has NO REST or SDK path at all — it's exposed exclusively as the
  * MCP tool `rollbackWorkflow` (AGENTS_ROLLBACK scope). See
- * `mcp/McpAgentWorkflowReadme.md` for how to trigger it from Claude Code.
+ * `mcp/McpAgentWorkflowExample.kt` for how to trigger it as a real MCP client.
  *
  * Run with:
  *   ./mvnw compile exec:java -Dexec.mainClass=finance.idem.examples.reconciliation.ReconciliationExampleKt
@@ -88,21 +77,15 @@ fun main() =
                 )
             println("Posted on-chain transaction with no PENDING match: ${unmatchedTx.transactionId}")
 
-            val results: List<Map<String, Any?>> =
-                client.httpClient
-                    .post("$baseUrl/api/v1/reconciliation/batch") {
-                        header("X-API-Key", apiKey)
-                        contentType(ContentType.Application.Json)
-                        setBody(mapOf("transactionIds" to listOf(unmatchedTx.transactionId)))
-                    }.body()
+            val results = client.reconcileBatch(listOf(unmatchedTx.transactionId))
 
             results.forEach { item ->
-                println("Reconciliation outcome for ${item["transactionId"]}: ${item["outcome"]}")
+                println("Reconciliation outcome for ${item.transactionId}: ${item.outcome}")
             }
             println(
                 "An UNMATCHED result is a reconciliation exception, not an automatic rollback - " +
                     "resolving/rolling back the underlying workflow is only available via the MCP " +
-                    "rollbackWorkflow tool today (no REST/SDK path). See mcp/McpAgentWorkflowReadme.md.",
+                    "rollbackWorkflow tool today (no REST/SDK path). See mcp/McpAgentWorkflowExample.kt.",
             )
         }
     }
