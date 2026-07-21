@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import finance.idem.examples.support.allowAgentMaxDebitPerSession
 import finance.idem.examples.support.createAccount
 import finance.idem.examples.support.mintAgentApiKey
+import finance.idem.examples.support.requiredEnv
 import finance.idem.sdk.IdemClient
 import io.modelcontextprotocol.client.McpClient
 import io.modelcontextprotocol.client.transport.HttpClientSseClientTransport
@@ -40,8 +41,8 @@ import java.util.UUID
  */
 fun main() =
     runBlocking {
-        val baseUrl = System.getenv("IDEM_BASE_URL") ?: error("IDEM_BASE_URL is not set — see .env.example")
-        val apiKey = System.getenv("IDEM_API_KEY") ?: error("IDEM_API_KEY is not set — see .env.example")
+        val baseUrl = requiredEnv("IDEM_BASE_URL")
+        val apiKey = requiredEnv("IDEM_API_KEY")
         val objectMapper = ObjectMapper()
 
         val client = IdemClient(baseUrl = baseUrl, apiKey = apiKey)

@@ -35,6 +35,40 @@ docker compose run --rm -e SPRING_PROFILES_ACTIVE=dev,seed app
 ./mvnw compile exec:java -Dexec.mainClass=finance.idem.examples.basic.BasicTransactionExampleKt
 ```
 
+### Configuring `.env`
+
+Every example reads two variables — `IDEM_BASE_URL` and `IDEM_API_KEY` — via a
+shared `requiredEnv()` helper
+([`support/Env.kt`](src/main/kotlin/finance/idem/examples/support/Env.kt))
+backed by [`dotenv-kotlin`](https://github.com/cdimascio/dotenv-kotlin). It
+loads `.env` from the project root automatically, so once the file is filled
+in you can run any example directly — no manual `export`/`source` step
+needed. A real environment variable, if set, always takes precedence over
+the value in `.env`.
+
+`.env` is gitignored; `.env.example` is the checked-in template:
+
+```bash
+cp .env.example .env
+```
+
+Then fill in:
+
+| Variable | Value |
+|---|---|
+| `IDEM_BASE_URL` | `http://localhost:8081` when running the stack via `docker compose up -d` above |
+| `IDEM_API_KEY` | The key printed by the `docker compose run --rm -e SPRING_PROFILES_ACTIVE=dev,seed app` seed step |
+
+```bash
+# .env
+IDEM_BASE_URL=http://localhost:8081
+IDEM_API_KEY=sk_live_...   # from the seed step's printed output
+```
+
+If `.env` is missing or a variable is blank, each example fails fast with
+`IDEM_BASE_URL is not set — see .env.example` (or the equivalent for
+`IDEM_API_KEY`) rather than a confusing SDK-level error.
+
 ## Examples
 
 | # | Example | What it shows |
