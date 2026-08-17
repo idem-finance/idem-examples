@@ -104,15 +104,9 @@ Run any of them via `exec:java`:
 <dependency>
     <groupId>finance.idem</groupId>
     <artifactId>idem-sdk-kotlin</artifactId>
-    <version>0.0.12-test</version>
+    <version>0.1.0</version>
 </dependency>
 ```
-
-`idem-sdk-kotlin` hasn't had a stable release yet — `0.0.12-test` is the
-latest pre-release build published to Maven Central while the `idem` release
-pipeline is under active development
-([idem-finance/idem#233](https://github.com/idem-finance/idem/issues/233)).
-Update this version once a real `0.x`/`1.x` release ships.
 
 Example 05 (`mcp/McpAgentWorkflowExample.kt`) also depends on the official
 `io.modelcontextprotocol.sdk:mcp` client, pinned to the same version the main
