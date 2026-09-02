@@ -1,7 +1,7 @@
 # idem-examples
 
 Usage examples for the [Idem](https://github.com/idem-finance/idem) ledger
-SDK (`idem-sdk-kotlin`) — an open-source, event-sourced double-entry ledger
+SDK (`idem-sdk-kotlin`) — a source-available, event-sourced double-entry ledger
 for institutions settling cross-border payments on stablecoin rails.
 
 This repo is intentionally separate from the main `idem` monorepo and MIT
